@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus — For Physicians</title>
+<style>
+:root{
+  --violet:#7B6BD8; --violet-d:#5F4FC4; --violet-bg:#EEEBFB;
+  --navy:#1A2140; --navy-2:#242C52; --ink:#1F2433;
+  --teal:#3FA8A0; --teal-d:#2E837C; --mint:#E5F4F2;
+  --blush:#EFD9D6; --bg:#F6F7FB; --card:#FFFFFF; --line:#E5E7F0;
+  --slate:#5A6172; --mute:#8A90A3; --green:#1F7A4D; --green-bg:#E3F2EA;
+  --amber:#B97A12; --amber-bg:#FBF0DC; --red:#B3372F; --red-bg:#F9E5E3;
+  --r:14px; --r-sm:10px;
+  --shadow:0 1px 3px rgba(26,33,64,.06),0 8px 24px rgba(26,33,64,.07);
+  --shadow-lg:0 4px 12px rgba(26,33,64,.10),0 16px 48px rgba(26,33,64,.14);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+h1,h2,h3,.serif{font-family:Georgia,"Times New Roman",serif}
+button{font-family:inherit;cursor:pointer;border:none}
+input,select,textarea{font-family:inherit;font-size:13.5px;color:var(--ink)}
+
+/* ===== demo chrome ===== */
+.chrome{position:sticky;top:0;z-index:50;background:var(--navy);color:#fff;display:flex;align-items:center;gap:16px;padding:10px 20px}
+.logo{display:flex;align-items:center;gap:9px}
+.tiles{display:flex;gap:3px}
+.tile{width:13px;height:13px}
+.t1{background:var(--violet)}.t2{background:var(--teal);border-radius:50%}
+.t3{background:var(--blush);clip-path:polygon(0 100%,100% 100%,100% 0)}
+.logo b{font-family:Georgia,serif;font-size:18px;letter-spacing:.4px}
+.chip{font-size:10px;font-weight:700;letter-spacing:.12em;background:var(--violet);padding:3px 9px;border-radius:99px}
+.journeys{margin-left:auto;display:flex;gap:6px;background:rgba(255,255,255,.08);padding:4px;border-radius:99px}
+.journeys button{background:transparent;color:#C9CEE4;font-size:12.5px;font-weight:600;padding:6px 14px;border-radius:99px;transition:.18s}
+.journeys button.on{background:#fff;color:var(--navy)}
+.journeys button:hover:not(.on){color:#fff}
+
+/* ===== views ===== */
+.view{display:none;animation:fade .25s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ===== home ===== */
+.home{max-width:1080px;margin:0 auto;padding:56px 24px}
+.home .kick{color:var(--violet);font-weight:700;font-size:11px;letter-spacing:.14em}
+.home h1{font-size:38px;color:var(--navy);margin:10px 0 8px}
+.home .sub{color:var(--slate);font-size:16px;max-width:720px}
+.jcards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:34px}
+.jcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px;box-shadow:var(--shadow);transition:.18s;text-align:left}
+.jcard:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.jcard .ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:14px}
+.jcard h3{font-size:18px;color:var(--navy);margin-bottom:6px}
+.jcard p{color:var(--slate);font-size:13px;margin-bottom:14px}
+.jcard .go{font-weight:700;font-size:13px}
+.scen{margin-top:38px;background:var(--navy);border-radius:var(--r);padding:22px 26px;color:#fff;display:flex;gap:18px;align-items:center}
+.scen .tag{font-size:10px;font-weight:700;letter-spacing:.12em;background:rgba(255,255,255,.14);padding:4px 10px;border-radius:99px;white-space:nowrap}
+.scen p{color:#C9CEE4;font-size:13.5px}
+.scen b{color:#fff}
+
+/* ===== app layout ===== */
+.app{display:flex;min-height:calc(100vh - 52px)}
+.side{width:218px;background:#fff;border-right:1px solid var(--line);padding:18px 12px;flex-shrink:0}
+.side .who{display:flex;gap:10px;align-items:center;padding:8px 10px;margin-bottom:14px}
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0}
+.side .who div{line-height:1.25}
+.side .who b{font-size:13px;display:block}
+.side .who span{font-size:11px;color:var(--mute)}
+.nav a{display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:9px;color:var(--slate);font-size:13px;font-weight:500;text-decoration:none;cursor:pointer;margin-bottom:2px}
+.nav a.on{background:var(--violet-bg);color:var(--violet-d);font-weight:600}
+.nav a:hover:not(.on){background:var(--bg)}
+.nav .sec{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--mute);padding:14px 12px 6px}
+.main{flex:1;padding:26px 30px;max-width:1140px}
+.ptitle{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
+.ptitle h2{font-size:23px;color:var(--navy)}
+.ptitle p{color:var(--slate);font-size:13px;margin-top:3px}
+.ptitle .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+
+/* ===== components ===== */
+.btn{background:var(--violet);color:#fff;font-weight:600;font-size:13.5px;padding:10px 20px;border-radius:99px;transition:.15s;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{background:var(--violet-d)}
+.btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--violet);color:var(--violet-d);background:#fff}
+.btn.teal{background:var(--teal)}.btn.teal:hover{background:var(--teal-d)}
+.btn.navy{background:var(--navy)}.btn.navy:hover{background:var(--navy-2)}
+.btn.sm{padding:7px 14px;font-size:12.5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.pad{padding:20px 22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat .lab{font-size:11.5px;font-weight:600;color:var(--mute);letter-spacing:.02em}
+.stat .num{font-size:26px;font-weight:700;color:var(--navy);font-family:Georgia,serif;margin-top:2px}
+.stat .sub{font-size:11.5px;color:var(--slate);margin-top:2px}
+.pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;display:inline-block}
+.p-green{background:var(--green-bg);color:var(--green)}
+.p-amber{background:var(--amber-bg);color:var(--amber)}
+.p-violet{background:var(--violet-bg);color:var(--violet-d)}
+.p-teal{background:var(--mint);color:var(--teal-d)}
+.p-red{background:var(--red-bg);color:var(--red)}
+.p-gray{background:#EEF0F5;color:var(--slate)}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--mute);text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);text-transform:uppercase}
+td{padding:12px 14px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr.row:hover{background:var(--bg)}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.field .hint{font-size:11.5px;color:var(--mute);margin-top:5px}
+.inp,select.inp,textarea.inp{width:100%;border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;background:#fff;outline:none;transition:.15s}
+.inp:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(123,107,216,.15)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chk{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:7px 14px;font-size:12.5px;font-weight:500;color:var(--slate);transition:.15s}
+.chk.on{border-color:var(--violet);background:var(--violet-bg);color:var(--violet-d);font-weight:600}
+.chk.on-teal{border-color:var(--teal);background:var(--mint);color:var(--teal-d);font-weight:600}
+.steps{display:flex;gap:0;margin-bottom:24px}
+.step{flex:1;text-align:center;position:relative;padding-top:26px;font-size:11.5px;font-weight:600;color:var(--mute)}
+.step::before{content:"";width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid var(--line);position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2}
+.step::after{content:"";height:2px;background:var(--line);position:absolute;top:8px;left:-50%;width:100%;z-index:1}
+.step:first-child::after{display:none}
+.step.done::before{background:var(--violet);border-color:var(--violet)}
+.step.done::after{background:var(--violet)}
+.step.now{color:var(--violet-d)}
+.step.now::before{border-color:var(--violet);box-shadow:0 0 0 4px rgba(123,107,216,.18)}
+.step.now::after{background:var(--violet)}
+.bar{height:7px;border-radius:99px;background:#EEF0F5;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px}
+.note{border-radius:var(--r-sm);padding:12px 15px;font-size:12.5px;display:flex;gap:10px;align-items:flex-start}
+.note.v{background:var(--violet-bg);color:var(--violet-d)}
+.note.t{background:var(--mint);color:var(--teal-d)}
+.note.a{background:var(--amber-bg);color:var(--amber)}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:13px 24px;border-radius:99px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow-lg);transition:.3s;z-index:99;opacity:0}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.login-wrap{min-height:calc(100vh - 52px);display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#F6F7FB 0%,#EEEBFB 55%,#E5F4F2 100%)}
+.login{width:400px;background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);padding:34px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+.drop{border:2px dashed var(--line);border-radius:var(--r);padding:30px;text-align:center;color:var(--slate);transition:.2s;cursor:pointer}
+.drop:hover,.drop.hot{border-color:var(--violet);background:var(--violet-bg);color:var(--violet-d)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.tab{background:none;padding:10px 16px;font-size:13px;font-weight:600;color:var(--slate);border-bottom:2px solid transparent;border-radius:0}
+.tab.on{color:var(--violet-d);border-bottom-color:var(--violet)}
+.kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.kv:last-child{border-bottom:none}
+.kv b{color:var(--navy)}
+.kv span{color:var(--slate)}
+@media (max-width:900px){.grid3,.grid4,.grid2,.jcards{grid-template-columns:1fr}.side{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ============ CHROME ============ -->
+<div class="chrome">
+  <div class="logo"><div class="tiles"><div class="tile t1"></div><div class="tile t2"></div><div class="tile t3"></div></div><b>Nexus</b></div>
+  <span class="chip">FOR PHYSICIANS · PREVIEW</span>
+</div>
+
+<!-- ============ DR: WELCOME ============ -->
+<section class="view active" id="dr-welcome">
+  <div class="login-wrap">
+    <div class="login" style="width:460px">
+      <div class="logo" style="margin-bottom:22px"><div class="tiles"><div class="tile t1"></div><div class="tile t2"></div><div class="tile t3"></div></div><b style="color:var(--navy);font-size:20px">Nexus</b>&nbsp;<span style="color:var(--teal-d);font-size:12px;font-weight:600">FOR PHYSICIANS</span></div>
+      <h2 style="font-size:22px;color:var(--navy)">Your expertise has a market price.</h2>
+      <p style="color:var(--slate);font-size:13.5px;margin:8px 0 14px">Pharma meetings and advisory boards are just the start. AI labs like Google and Meta pay physicians to evaluate medical AI, expert networks pay for a specialist's read before a trade, and locum shifts are on the table too — all matched to your specialty, at published fair-market rates, with compliance handled. Onboarding takes about 8 minutes.</p>
+      <div class="chips" style="margin-bottom:4px">
+        <span class="pill p-violet">Pharma &amp; device</span>
+        <span class="pill p-teal">AI labs</span>
+        <span class="pill p-violet">Surveys</span>
+        <span class="pill p-teal">Advisory boards</span>
+        <span class="pill p-amber">Expert networks</span>
+        <span class="pill p-gray">Legal review</span>
+        <span class="pill p-amber">Clinical trials</span>
+        <span class="pill p-gray">Locum shifts</span>
+      </div>
+      <button class="btn teal" style="width:100%;justify-content:center;margin-top:18px" onclick="go('dr-onb-1')">Start onboarding →</button>
+      <p style="font-size:11px;color:var(--mute);margin-top:14px;text-align:center">Prescribers only (MD · DO · NP · PA). Your data is never sold.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DR: ONB 1 — NPI ============ -->
+<section class="view" id="dr-onb-1">
+  <div class="main" style="max-width:680px;margin:0 auto;padding:34px 24px">
+    <div class="steps"><div class="step now">Verify</div><div class="step">Profile</div><div class="step">CV</div><div class="step">Clinical focus</div><div class="step">Disclosures</div><div class="step">Payments</div><div class="step">Rate card</div></div>
+    <div class="card pad">
+      <h2 style="font-size:20px;color:var(--navy);margin-bottom:4px">Verify your NPI</h2>
+      <p style="color:var(--slate);font-size:13px;margin-bottom:18px">We check it against the CMS NPPES registry in real time. One field — we pull the rest.</p>
+      <div class="field"><label>National Provider Identifier (10 digits)</label><input class="inp mono" value="1457 392 887" style="font-size:16px;letter-spacing:.06em"></div>
+      <div class="note t">✅&nbsp; <b>Verified against NPPES.</b> Maya E. Reyes, MD — Taxonomy 207RX0202X (Medical Oncology) — Tampa, FL — License FL ME112847 active.</div>
+      <div class="kv" style="margin-top:14px"><span>Name</span><b>Maya E. Reyes, MD</b></div>
+      <div class="kv"><span>Primary taxonomy</span><b>Medical Oncology (207RX0202X)</b></div>
+      <div class="kv"><span>State license(s)</span><b>FL — active · exp 01/2028</b></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:18px"><button class="btn teal" onclick="go('dr-onb-2')">Looks right — continue →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DR: ONB 2 — PROFILE ============ -->
+<section class="view" id="dr-onb-2">
+  <div class="main" style="max-width:680px;margin:0 auto;padding:34px 24px">
+    <div class="steps"><div class="step done">Verify</div><div class="step now">Profile</div><div class="step">CV</div><div class="step">Clinical focus</div><div class="step">Disclosures</div><div class="step">Payments</div><div class="step">Rate card</div></div>
+    <div class="card pad">
+      <h2 style="font-size:20px;color:var(--navy);margin-bottom:4px">Your practice profile</h2>
+      <p style="color:var(--slate);font-size:13px;margin-bottom:18px">This is what matching runs on. The more precise it is, the better your invitations.</p>
+      <div class="grid2">
+        <div class="field"><label>Practice setting</label><select class="inp"><option>Community practice</option><option>Academic medical center</option><option>IDN / hospital-employed</option><option>Private practice (independent)</option></select></div>
+        <div class="field"><label>Years in practice</label><select class="inp"><option>12</option></select></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Subspecialty focus</label><input class="inp" value="Breast oncology, GI oncology"></div>
+        <div class="field"><label>Institution / employer</label><input class="inp" value="Bayshore Cancer Specialists"></div>
+      </div>
+      <div class="field"><label>Roles &amp; influence <span style="font-weight:400;color:var(--mute)">(drives invitations, not rates)</span></label>
+        <div class="chips"><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">P&amp;T / pathway committee</button><button class="chk" onclick="this.classList.toggle('on-teal')">Trial investigator</button><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">Practice leadership</button><button class="chk" onclick="this.classList.toggle('on-teal')">Residency/fellowship faculty</button></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Languages</label><input class="inp" value="English, Spanish"></div>
+        <div class="field"><label>Time zone</label><select class="inp"><option>Eastern</option></select></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px"><button class="btn ghost" onclick="go('dr-onb-1')">← Back</button><button class="btn teal" onclick="go('dr-onb-3')">Continue →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DR: ONB 3 — CV ============ -->
+<section class="view" id="dr-onb-3">
+  <div class="main" style="max-width:680px;margin:0 auto;padding:34px 24px">
+    <div class="steps"><div class="step done">Verify</div><div class="step done">Profile</div><div class="step now">CV</div><div class="step">Clinical focus</div><div class="step">Disclosures</div><div class="step">Payments</div><div class="step">Rate card</div></div>
+    <div class="card pad">
+      <h2 style="font-size:20px;color:var(--navy);margin-bottom:4px">CV &amp; credentials</h2>
+      <p style="color:var(--slate);font-size:13px;margin-bottom:18px">Your CV feeds FMV tiering (experience, publications, leadership). It's never shared without your consent.</p>
+      <div class="drop" id="dz" onclick="dzdone()">
+        <div style="font-size:26px;margin-bottom:6px">📄</div>
+        <b>Drop your CV here</b> or click to browse<br><span style="font-size:11.5px">PDF or DOCX · we parse it automatically</span>
+      </div>
+      <div id="dzok" style="display:none">
+        <div class="note t" style="margin-top:14px">✅&nbsp; <b>Reyes_CV_2026.pdf parsed.</b> Found: 12 yrs post-fellowship · 8 peer-reviewed publications · 2 first-author · ASCO member · pathway committee chair.</div>
+        <div class="kv" style="margin-top:10px"><span>Publications detected</span><b>8 (editable)</b></div>
+        <div class="kv"><span>Society memberships</span><b>ASCO, FLASCO</b></div>
+        <div class="kv"><span>Suggested FMV tier inputs</span><b>Experience ✓ · Publications ✓ · Leadership ✓</b></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:18px"><button class="btn ghost" onclick="go('dr-onb-2')">← Back</button><button class="btn teal" onclick="go('dr-onb-4')">Continue →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DR: ONB 4 — CLINICAL FOCUS ============ -->
+<section class="view" id="dr-onb-4">
+  <div class="main" style="max-width:680px;margin:0 auto;padding:34px 24px">
+    <div class="steps"><div class="step done">Verify</div><div class="step done">Profile</div><div class="step done">CV</div><div class="step now">Clinical focus</div><div class="step">Disclosures</div><div class="step">Payments</div><div class="step">Rate card</div></div>
+    <div class="card pad">
+      <h2 style="font-size:20px;color:var(--navy);margin-bottom:4px">Clinical focus &amp; volumes</h2>
+      <p style="color:var(--slate);font-size:13px;margin-bottom:18px">Self-reported, kept private, used only for eligibility matching — so you never get invited to something you can't speak to.</p>
+      <div class="field"><label>Conditions you actively treat</label>
+        <div class="chips"><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">Breast cancer — HER2+</button><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">Breast cancer — HR+/HER2−</button><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">Colorectal</button><button class="chk" onclick="this.classList.toggle('on-teal')">NSCLC</button><button class="chk" onclick="this.classList.toggle('on-teal')">Pancreatic</button><button class="chk" onclick="toast('Add a custom condition (demo)')">+ Add</button></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>HER2+ mBC patients / year</label><select class="inp"><option>10–20</option><option>5–10</option><option>20+</option></select></div>
+        <div class="field"><label>New patients / month (all)</label><select class="inp"><option>25–40</option></select></div>
+      </div>
+      <div class="field"><label>Treatments &amp; classes you've initiated in the last 12 months</label>
+        <div class="chips"><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">ADCs</button><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">CDK4/6 inhibitors</button><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">Checkpoint inhibitors</button><button class="chk" onclick="this.classList.toggle('on-teal')">Bispecifics</button></div>
+      </div>
+      <div class="note v">🎯&nbsp; This is the engine behind <b>"100% eligible, every invite."</b> Briefs are matched against these fields before anything reaches your inbox.</div>
+      <div style="display:flex;justify-content:space-between;margin-top:18px"><button class="btn ghost" onclick="go('dr-onb-3')">← Back</button><button class="btn teal" onclick="go('dr-onb-5')">Continue →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DR: ONB 5 — DISCLOSURES ============ -->
+<section class="view" id="dr-onb-5">
+  <div class="main" style="max-width:680px;margin:0 auto;padding:34px 24px">
+    <div class="steps"><div class="step done">Verify</div><div class="step done">Profile</div><div class="step done">CV</div><div class="step done">Clinical focus</div><div class="step now">Disclosures</div><div class="step">Payments</div><div class="step">Rate card</div></div>
+    <div class="card pad">
+      <h2 style="font-size:20px;color:var(--navy);margin-bottom:4px">Disclosures &amp; transparency</h2>
+      <p style="color:var(--slate);font-size:13px;margin-bottom:18px">Two minutes now, zero surprises later.</p>
+      <div class="field"><label>Current industry relationships</label>
+        <div class="chips"><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">Speakers bureau (1 company)</button><button class="chk" onclick="this.classList.toggle('on-teal')">Advisory retainer</button><button class="chk" onclick="this.classList.toggle('on-teal')">Trial PI</button><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">None of these with PayUp Therapeutics</button></div>
+        <div class="hint">Used to enforce conflict exclusions — e.g., you'll never be invited to advise a company whose bureau you're on.</div>
+      </div>
+      <div class="field"><label>Employer policy check</label>
+        <div class="kv"><span>Does your employer require pre-approval for paid industry work?</span><b><select class="inp" style="width:110px"><option>No</option><option>Yes</option></select></b></div>
+      </div>
+      <div class="field"><label>Open Payments (Sunshine Act) acknowledgment</label>
+        <div class="note a">☀️&nbsp; Honoraria for consulting and advisory work are reported to CMS Open Payments under your NPI. <b>Nexus files these for the manufacturer, shows you every record before it's public, and gives you the full 45-day review-and-dispute window.</b> Most survey work via blinded panels is not reportable; we mark each opportunity clearly.</div>
+        <label style="display:flex;gap:10px;margin-top:12px;font-size:13px"><input type="checkbox" checked> I understand what gets reported and that I'll see records first.</label>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px"><button class="btn ghost" onclick="go('dr-onb-4')">← Back</button><button class="btn teal" onclick="go('dr-onb-6')">Continue →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DR: ONB 6 — PAYMENTS ============ -->
+<section class="view" id="dr-onb-6">
+  <div class="main" style="max-width:680px;margin:0 auto;padding:34px 24px">
+    <div class="steps"><div class="step done">Verify</div><div class="step done">Profile</div><div class="step done">CV</div><div class="step done">Clinical focus</div><div class="step done">Disclosures</div><div class="step now">Payments</div><div class="step">Rate card</div></div>
+    <div class="card pad">
+      <h2 style="font-size:20px;color:var(--navy);margin-bottom:4px">How do you want to get paid?</h2>
+      <p style="color:var(--slate);font-size:13px;margin-bottom:18px">Your earnings, your call. Change this anytime, per engagement if you like.</p>
+      <div class="field"><label>Payout destination</label>
+        <div class="chips">
+          <button class="chk on-teal" onclick="this.classList.toggle('on-teal')">Personal account (ACH)</button>
+          <button class="chk" onclick="this.classList.toggle('on-teal')">Practice account</button>
+          <button class="chk" onclick="this.classList.toggle('on-teal')">Charity of my choice</button>
+          <button class="chk" onclick="this.classList.toggle('on-teal')">Split…</button>
+        </div>
+        <div class="hint">Practice routing can fund staff bonuses, scrubs, or team meals. Charity routing sends 100% with a year-end receipt.</div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Tax form</label><div class="note t" style="padding:10px 14px">📋&nbsp; W-9 collected once. One consolidated 1099 each January — across every buyer.</div></div>
+        <div class="field"><label>Payout timing</label><select class="inp"><option>Within 5 business days of completion</option><option>Monthly batch</option></select></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px"><button class="btn ghost" onclick="go('dr-onb-5')">← Back</button><button class="btn teal" onclick="go('dr-onb-7')">Continue →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DR: ONB 7 — RATE CARD ============ -->
+<section class="view" id="dr-onb-7">
+  <div class="main" style="max-width:680px;margin:0 auto;padding:34px 24px">
+    <div class="steps"><div class="step done">Verify</div><div class="step done">Profile</div><div class="step done">CV</div><div class="step done">Clinical focus</div><div class="step done">Disclosures</div><div class="step done">Payments</div><div class="step now">Rate card</div></div>
+    <div class="card pad" style="text-align:center">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--teal-d)">YOUR PUBLISHED RATE CARD</div>
+      <h2 style="font-size:26px;color:var(--navy);margin:10px 0 2px">FMV Tier 2 — $220 / hour</h2>
+      <p style="color:var(--slate);font-size:13px;max-width:440px;margin:0 auto 18px">Set by specialty, experience, publications, and leadership roles — benchmarked against independent compensation data. Not negotiable per engagement, by design. That's what keeps the channel legal and repeatable.</p>
+      <div class="grid3" style="text-align:left">
+        <div class="card pad" style="box-shadow:none"><div class="stat"><div class="lab">20-MIN MEETING</div><div class="num">$73</div></div></div>
+        <div class="card pad" style="box-shadow:none"><div class="stat"><div class="lab">SURVEY (TYPICAL)</div><div class="num">$25–110</div></div></div>
+        <div class="card pad" style="box-shadow:none"><div class="stat"><div class="lab">AD BOARD SESSION</div><div class="num">$1,100</div></div></div>
+      </div>
+      <div class="note v" style="text-align:left;margin-top:16px">📅&nbsp; <b>Last step:</b> set your availability windows. We suggest two 20-minute slots per week to start — lunch and end-of-clinic are most popular.</div>
+      <button class="btn teal" style="margin-top:18px" onclick="toast('Welcome to Nexus, Dr. Reyes — first matches within days');go('dr-dash')">Finish — take me to my dashboard ✓</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DR: DASHBOARD ============ -->
+<section class="view" id="dr-dash">
+  <div class="app">
+    <div class="side">
+      <div class="who"><div class="av" style="background:var(--teal)">MR</div><div><b>Dr. Maya Reyes</b><span>Medical Oncology · Tier 2</span></div></div>
+      <div class="nav">
+        <a class="on">🏠&nbsp; This Week</a>
+        <a onclick="toast('Full earnings history (demo)')">💵&nbsp; Earnings</a>
+        <a onclick="toast('Availability calendar (demo)')">📅&nbsp; Availability</a>
+        <a onclick="toast('Open Payments transparency center (demo)')">☀️&nbsp; My Open Payments</a>
+        <a onclick="toast('Profile &amp; payout settings (demo)')">⚙️&nbsp; Profile &amp; payout</a>
+      </div>
+    </div>
+    <div class="main">
+      <div class="ptitle"><div><h2>Good morning, Dr. Reyes</h2><p>Your weekly digest — every invitation below is one you're verified eligible for.</p></div>
+      <div class="right"><span class="pill p-teal">YTD earned: $4,820</span></div></div>
+      <div class="card pad" style="margin-bottom:18px;display:flex;align-items:center;gap:16px;border-left:4px solid var(--violet)">
+        <div><span class="pill p-violet">UPCOMING · TODAY 12:40 PM</span>
+        <b style="display:block;color:var(--navy);margin-top:6px">20-min insight meeting — HER2+ mBC sequencing · PayUp Therapeutics</b>
+        <span style="font-size:12px;color:var(--slate)">In-browser video · no download · honorarium $73 releases on completion</span></div>
+        <div style="margin-left:auto;display:flex;gap:8px"><button class="btn" onclick="go('dr-meeting')">Join meeting →</button><button class="btn ghost sm" onclick="toast('Proposed new time sent to the requesting team')">Suggest new time</button></div>
+      </div>
+      <div class="note v" style="margin-bottom:14px">💼&nbsp; <b>$1,592 available this week across 6 matched opportunities</b> — pharma, an AI lab, a CRO, and a health plan all want your brain. Take what fits; skip the rest.</div>
+      <div class="grid3" style="margin-bottom:16px">
+        <div class="card pad">
+          <span class="pill p-violet" style="margin-bottom:10px">PHARMA · 20-MIN MEETING · $73</span>
+          <b style="display:block;color:var(--navy);margin:8px 0 4px">HER2+ mBC treatment sequencing</b>
+          <p style="font-size:12.5px;color:var(--slate)">PayUp Therapeutics medical team · MLR-approved insight discussion · pick a slot</p>
+          <div style="display:flex;gap:8px;margin-top:12px"><button class="btn sm" onclick="toast('Booked — Thu Jun 26, 12:40 PM. Calendar invite sent.')">Accept &amp; pick time</button><button class="btn ghost sm" onclick="toast('Passed — removed from your queue')">Pass</button></div>
+        </div>
+        <div class="card pad" style="border:1.5px solid var(--violet)">
+          <span class="pill p-violet" style="margin-bottom:10px">AI LAB · 30-MIN EVAL · $150</span>
+          <b style="display:block;color:var(--navy);margin:8px 0 4px">Grade a medical AI's oncology reasoning</b>
+          <p style="font-size:12.5px;color:var(--slate)">Mammoth AI (Big Tech) · review 6 model answers, flag what would hurt a patient · <b>data-use: you choose train / no-train</b></p>
+          <div style="display:flex;gap:8px;margin-top:12px"><button class="btn sm" onclick="toast('Accepted — data-use terms: NO-TRAIN selected. $150 on completion.')">Accept (no-train)</button><button class="btn ghost sm" onclick="toast('Accepted — data-use terms: TRAIN OK. $190 on completion (premium).')">Train OK · $190</button></div>
+        </div>
+        <div class="card pad">
+          <span class="pill p-teal" style="margin-bottom:10px">CRO · FEASIBILITY · 25 MIN · $95</span>
+          <b style="display:block;color:var(--navy);margin:8px 0 4px">Trial-site feasibility — HER2+ study</b>
+          <p style="font-size:12.5px;color:var(--slate)">Velocity CRO · could your site enroll? Patient volumes, infusion capacity, staffing</p>
+          <div style="display:flex;gap:8px;margin-top:12px"><button class="btn sm teal" onclick="toast('Booked — Velocity CRO feasibility call, Wed 12:20 PM')">Accept &amp; pick time</button><button class="btn ghost sm" onclick="toast('Passed — removed from your queue')">Pass</button></div>
+        </div>
+        <div class="card pad">
+          <span class="pill p-teal" style="margin-bottom:10px">SURVEY · 12 MIN · $54</span>
+          <b style="display:block;color:var(--navy);margin:8px 0 4px">ADC adverse-event management</b>
+          <p style="font-size:12.5px;color:var(--slate)">Blinded market research · not Open Payments reportable · complete by Fri</p>
+          <div style="display:flex;gap:8px;margin-top:12px"><button class="btn sm teal" onclick="toast('Survey opened in a new tab (demo)')">Start now</button><button class="btn ghost sm" onclick="toast('Passed — removed from your queue')">Pass</button></div>
+        </div>
+        <div class="card pad">
+          <span class="pill p-amber" style="margin-bottom:10px">PAYER · PANEL · 45 MIN · $165</span>
+          <b style="display:block;color:var(--navy);margin:8px 0 4px">Prior-auth friction in oncology</b>
+          <p style="font-size:12.5px;color:var(--slate)">BlueSky Health Plans · plan-design advisory · governance: no utilization pressure, ever</p>
+          <div style="display:flex;gap:8px;margin-top:12px"><button class="btn sm" onclick="toast('Seat held — BlueSky prior-auth panel, Jul 8')">Hold my seat</button><button class="btn ghost sm" onclick="toast('Passed — removed from your queue')">Pass</button></div>
+        </div>
+        <div class="card pad">
+          <span class="pill p-amber" style="margin-bottom:10px">AD BOARD · EVENING · $1,100</span>
+          <b style="display:block;color:var(--navy);margin:8px 0 4px">Pre-launch advisory — breast oncology</b>
+          <p style="font-size:12.5px;color:var(--slate)">Virtual · Jul 15, 7:00–9:00 PM ET · 12 seats · 3 left</p>
+          <div style="display:flex;gap:8px;margin-top:12px"><button class="btn sm" onclick="toast('Seat held — confirmation and pre-read to follow')">Hold my seat</button><button class="btn ghost sm" onclick="toast('Passed — removed from your queue')">Pass</button></div>
+        </div>
+        <div class="card pad" style="border:1.5px solid var(--teal)">
+          <span class="pill p-teal" style="margin-bottom:10px">EXPERT NETWORK · 1-HR CALL · $570</span>
+          <b style="display:block;color:var(--navy);margin:8px 0 4px">Investor call — oncology market landscape</b>
+          <p style="font-size:12.5px;color:var(--slate)">Northbridge Capital via Vantage Expert Network · buy-side due diligence, no stock-specific advice, no MNPI ever</p>
+          <div style="display:flex;gap:8px;margin-top:12px"><button class="btn sm teal" onclick="toast('Booked — Vantage confirms your slot within 24 hrs')">Accept &amp; pick time</button><button class="btn ghost sm" onclick="toast('Passed — removed from your queue')">Pass</button></div>
+        </div>
+        <div class="card pad">
+          <span class="pill p-gray" style="margin-bottom:10px">LOCUM · WEEKEND SHIFT · $185/hr</span>
+          <b style="display:block;color:var(--navy);margin:8px 0 4px">Community ED coverage — 2 twelve-hour shifts</b>
+          <p style="font-size:12.5px;color:var(--slate)">ShiftBridge Locum Network · credentialing pre-verified from your Nexus profile · malpractice coverage included</p>
+          <div style="display:flex;gap:8px;margin-top:12px"><button class="btn sm" onclick="toast('Applied — ShiftBridge credentialing team will confirm within 48 hrs')">Apply for shift</button><button class="btn ghost sm" onclick="toast('Passed — removed from your queue')">Pass</button></div>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="pad" style="border-bottom:1px solid var(--line)"><b style="color:var(--navy)">Earnings ledger</b></div>
+          <table>
+            <tr><th>Date</th><th>Engagement</th><th>Amount</th><th>Status</th></tr>
+            <tr><td>06/12</td><td>20-min meeting — GI oncology (pharma)</td><td>$73</td><td><span class="pill p-green">Paid</span></td></tr>
+            <tr><td>06/10</td><td>AI model evaluation — Mammoth AI (no-train)</td><td>$150</td><td><span class="pill p-green">Paid</span></td></tr>
+            <tr><td>06/09</td><td>Survey — biomarker testing</td><td>$66</td><td><span class="pill p-green">Paid</span></td></tr>
+            <tr><td>06/02</td><td>Ad board — colorectal pathways</td><td>$1,100</td><td><span class="pill p-green">Paid</span></td></tr>
+          </table>
+        </div>
+        <div class="card pad">
+          <b style="color:var(--navy)">Your transparency center</b>
+          <div class="kv" style="margin-top:10px"><span>Open Payments records pending your review</span><b>2</b></div>
+          <div class="kv"><span>Review window remaining</span><b>38 days</b></div>
+          <div class="kv"><span>Annual program cap used</span><b>$4,820 of $15,000</b></div>
+          <div class="bar" style="margin-top:8px"><i style="width:32%;background:var(--teal)"></i></div>
+          <div class="note t" style="margin-top:14px">👀&nbsp; You see every record before CMS publishes it. Dispute with one click.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DR: MEETING ROOM ============ -->
+<section class="view" id="dr-meeting">
+  <div style="min-height:calc(100vh - 52px);background:var(--navy);padding:26px;display:flex;flex-direction:column">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+      <b style="color:#fff;font-size:15px">REMITTA insight meeting — HER2+ mBC sequencing</b>
+      <span class="pill" style="background:rgba(255,255,255,.12);color:#fff">AUTHENTICATED · RECORDED</span>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <span style="font-family:ui-monospace,Menlo,monospace;font-size:22px;color:#fff;font-weight:700" id="timer">17:24</span>
+        <span style="font-size:11px;color:var(--mute-ice,#9C94D6);color:#9C94D6">remaining · auto-ends at 0:00</span>
+      </div>
+    </div>
+    <div style="flex:1;display:grid;grid-template-columns:2fr 1fr;gap:14px">
+      <div style="background:#121730;border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative;min-height:340px">
+        <div style="text-align:center"><div class="av" style="background:var(--violet);width:84px;height:84px;font-size:28px;margin:0 auto 12px">JC</div><b style="color:#fff">Jordan Calloway — PayUp Medical Affairs</b><br><span style="font-size:12px;color:#9C94D6">speaking…</span></div>
+        <div style="position:absolute;bottom:14px;right:14px;background:#121730;border:2px solid #2A3158;border-radius:12px;padding:18px 26px;text-align:center"><div class="av" style="background:var(--teal);margin:0 auto 6px">MR</div><span style="font-size:11px;color:#fff">Dr. Reyes</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="background:#242C52;border-radius:14px;padding:16px">
+          <b style="color:#fff;font-size:12px">MEETING GUARDRAILS</b>
+          <p style="color:#C9CEE4;font-size:11.5px;margin-top:8px;line-height:1.5">MLR-approved guide PUP-2026-0419 · insight exchange only · recording &amp; transcript archived to both parties · timer enforces the 20-minute scope (5-min grace).</p>
+        </div>
+        <div style="background:#242C52;border-radius:14px;padding:16px">
+          <b style="color:#fff;font-size:12px">DISCUSSION TOPICS (3)</b>
+          <p style="color:#C9CEE4;font-size:11.5px;margin-top:8px;line-height:1.6">1. Current 2L sequencing approach<br>2. Tolerability trade-offs in practice<br>3. Pathway &amp; P&amp;T dynamics</p>
+        </div>
+        <div style="background:#242C52;border-radius:14px;padding:16px">
+          <b style="color:#fff;font-size:12px">WHEN THE TIMER ENDS</b>
+          <p style="color:#C9CEE4;font-size:11.5px;margin-top:8px;line-height:1.5">Both participants are redirected to a 60-second feedback survey. Honorarium releases on survey completion.</p>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:12px;margin-top:16px">
+      <button class="btn ghost sm" style="background:#242C52;color:#fff;border-color:#2A3158" onclick="this.textContent=this.textContent.includes('Mute')?'🔇 Unmute':'🎙 Mute'">🎙 Mute</button>
+      <button class="btn ghost sm" style="background:#242C52;color:#fff;border-color:#2A3158" onclick="this.textContent=this.textContent.includes('Camera')?'🚫 Camera off':'🎥 Camera'">🎥 Camera</button>
+      <button class="btn sm" style="background:var(--red,#B3372F);background:#B3372F" onclick="go('dr-survey')">End meeting → survey</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DR: POST-MEETING SURVEY ============ -->
+<section class="view" id="dr-survey">
+  <div class="main" style="max-width:620px;margin:0 auto;padding:40px 24px">
+    <div class="card pad">
+      <span class="pill p-teal">MEETING COMPLETE · 21 MIN</span>
+      <h2 style="font-size:20px;color:var(--navy);margin:10px 0 4px">90-second debrief, then you're paid</h2>
+      <p style="color:var(--slate);font-size:13px;margin-bottom:18px">Two parts: what you learned, and how the meeting ran. A separate survey goes to the PayUp side — both feed the program's education analytics.</p>
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--teal-d);margin-bottom:10px">PART 1 — WHAT DID YOU TAKE AWAY?</div>
+      <div class="field"><label>Anything you learned in this discussion? (pick all that apply)</label>
+        <div class="chips"><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">ILD monitoring protocol</button><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">2L sequencing evidence</button><button class="chk" onclick="this.classList.toggle('on-teal')">Biomarker support program</button><button class="chk" onclick="this.classList.toggle('on-teal')">Nothing new</button></div>
+      </div>
+      <div class="field"><label>Would any follow-up resources help your practice?</label>
+        <div class="chips"><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">ILD management algorithm</button><button class="chk" onclick="this.classList.toggle('on-teal')">Dosing in renal impairment</button><button class="chk" onclick="this.classList.toggle('on-teal')">Patient financial assistance info</button><button class="chk" onclick="this.classList.toggle('on-teal')">Trial enrollment criteria</button><button class="chk" onclick="this.classList.toggle('on-teal')">None</button></div>
+        <div class="hint">Resources arrive through Nexus — no rep follow-up chase. Requests feed the program's educational-gap analytics.</div>
+      </div>
+      <div class="field"><label>What should they cover better next time? (optional)</label>
+        <input class="inp" placeholder="e.g., real-world data instead of trial-only numbers…">
+      </div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--teal-d);margin:16px 0 10px">PART 2 — HOW DID IT RUN?</div>
+      <div class="field"><label>Was the discussion guide followed? (insight exchange, no promotion)</label>
+        <div class="chips"><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">Yes</button><button class="chk" onclick="this.classList.toggle('on-teal')">Mostly</button><button class="chk" onclick="this.classList.toggle('on-teal')">No — flag for review</button></div>
+      </div>
+      <div class="field"><label>Rate the use of your time</label>
+        <div class="chips"><button class="chk" onclick="this.classList.toggle('on-teal')">★★☆</button><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">★★★ Worth repeating</button></div>
+      </div>
+      <div class="field"><label>Open to a follow-up with this team?</label>
+        <div class="chips"><button class="chk on-teal" onclick="this.classList.toggle('on-teal')">Yes</button><button class="chk" onclick="this.classList.toggle('on-teal')">No</button></div>
+      </div>
+      <button class="btn teal" style="width:100%;justify-content:center" onclick="toast('Debrief saved — $73 released (ACH) · ILD algorithm on its way to your library');go('dr-dash')">Submit — release my $73 ✓</button>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  var el=document.getElementById(id);
+  if(el){el.classList.add('active');}
+  window.scrollTo(0,0);
+}
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h=setTimeout(function(){t.classList.remove('show');},3200);
+}
+/* CV dropzone */
+function dzdone(){
+  document.getElementById('dz').style.display='none';
+  document.getElementById('dzok').style.display='block';
+}
+</script>
+</body>
+</html>
